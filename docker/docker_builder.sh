@@ -209,13 +209,13 @@ export_container() {
     fi
 
     cd ${WORKDIR}
-    docker image save -o ${ORG}-${PRODUCT}-${VERSION}.tar ${ORG}/${PRODUCT}:${VERSION} 
+    docker image save ${ORG}/${PRODUCT}:${VERSION} | gzip -c > ${ORG}-${PRODUCT}-${VERSION}.tar.gz
     if [ $? -eq 0 ]; then
         mkdir $CURDIR/tarball 
         mkdir $WORKDIR/tarball
-        cp ${ORG}-${PRODUCT}-${VERSION}.tar $CURDIR/tarball/
-        cp ${ORG}-${PRODUCT}-${VERSION}.tar $WORKDIR/tarball/
-        rm ${ORG}-${PRODUCT}-${VERSION}.tar
+        cp ${ORG}-${PRODUCT}-${VERSION}.tar.gz $CURDIR/tarball/
+        cp ${ORG}-${PRODUCT}-${VERSION}.tar.gz $WORKDIR/tarball/
+        rm ${ORG}-${PRODUCT}-${VERSION}.tar.gz
     fi
 }
 

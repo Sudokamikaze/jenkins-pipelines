@@ -25,10 +25,6 @@ pipeline {
             description: 'Version of selected product',
             name: 'DOCKER_VERSION'
         )
-        string(
-            description: 'Directory of the product',
-            name: 'DOCKER_DIRECTORY'
-        )
         choice(
             choices: 'Dockerfile\nDockerfile.debug\nDockerfile.k8s',
             description: 'Extension of dockerfile to be built',
@@ -41,19 +37,14 @@ pipeline {
         )
         booleanParam(
             defaultValue: false,
-            description: "Set true to set MAJOR tag to version selected",
+            description: 'Set true to set MAJOR tag to version selected',
             name: 'DOCKER_MAJOR_TAG'
         )
-        booleanParam(
-            defaultValue: false,
-            description: "Triggers save of built image",
-            name: 'DOCKER_EXPORT'
-        )
-        booleanParam(
-            defaultValue: false,
-            description: "Triggers push of built image to dockerhub",
-            name: 'DOCKER_RELEASE'
-        )      
+        choice(
+            choices: 'push\nexport',
+            description: 'Export will trigger docker save and push will push to the dockerhub',
+            name: 'DOCKER_MODE'
+        )     
     }
     options {
         skipDefaultCheckout()
@@ -65,11 +56,12 @@ pipeline {
             steps {
                 sh '''
                   rm -f docker_builder.sh
-                  wget https://raw.githubusercontent.com/Sudokamikaze/jenkins-pipelines/ENG-879/docker/docker_builder.sh
-                  chmod +x docker_builder.sh
                   sudo rm -rf tmp
                   mkdir tmp
+                  wget https://raw.githubusercontent.com/Sudokamikaze/jenkins-pipelines/ENG-879/docker/docker_builder.sh
+                  chmod +x docker_builder.sh
                   sudo bash -x docker_builder.sh --builddir=$(pwd)/tmp --install_deps=1
+                  sudo gpasswd -a $(whoami) docker
                   bash -x docker_builder.sh --builddir=$(pwd)/tmp --repo=${GIT_REPO} --branch=${GIT_BRANCH} --get_sources=1
                 '''
             }
@@ -78,21 +70,33 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh '''
-                    sudo bash -x docker_builder.sh --builddir=$(pwd)/tmp --build_container=1 --product=${DOCKER_NAME} \
-                        --productdir=${DOCKER_DIRECTORY} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION} --dockerfile=${DOCKER_FILE} \
-                        --update_major=${DOCKER_MAJOR_TAG}
+                    sg docker -c "
+                        bash -x docker_builder.sh --builddir=$(pwd)/tmp --build_container=1 --product=${DOCKER_NAME} \
+                            --organization=${DOCKER_ORG} --version=${DOCKER_VERSION} --dockerfile=${DOCKER_FILE} \
+                            --update_major=${DOCKER_MAJOR_TAG}
+                    "
                 '''
             }
         }
-        
-        stage('Save Image') {
+
+        stage('Test image') {
+            steps {
+                sh '''
+                    cd ${WORKSPACE}/tmp/percona-docker/test
+                    bash -x run.sh ${DOCKER_ORG}/${DOCKER_NAME}:${DOCKER_VERSION}
+                '''
+            }
+        }
+
+        stage('Export Image') {
             when {
-                expression { params.DOCKER_EXPORT == true }
+                expression { params.DOCKER_MODE == 'export' }
             }
             steps {
                 sh '''
-                    sudo bash -x docker_builder.sh --builddir=$(pwd)/tmp --export_container=1 --product=${DOCKER_NAME} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION}
-                    sudo chmod -R 777 ${WORKSPACE}/tarball
+                    sg docker -c "
+                        bash -x docker_builder.sh --builddir=$(pwd)/tmp --export_container=1 --product=${DOCKER_NAME} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION}
+                    "
                 '''
                 archiveArtifacts artifacts: 'tarball/**', followSymlinks: false, onlyIfSuccessful: true
             }
@@ -100,14 +104,16 @@ pipeline {
 
         stage('Push Image') {
             when {
-                expression { params.DOCKER_RELEASE == true }
+                expression { params.DOCKER_MODE == 'push' }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'hub.docker.com', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh '''
-                        sudo docker login -u ${USER} -p ${PASS}
-                        sudo bash -x docker_builder.sh --builddir=$(pwd)/tmp --release_container=1 --product=${DOCKER_NAME} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION} \
-                         --update_major=${DOCKER_MAJOR_TAG}
+                        sg docker -c "
+                            docker login -u ${USER} -p ${PASS}
+                            bash -x docker_builder.sh --builddir=$(pwd)/tmp --release_container=1 --product=${DOCKER_NAME} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION} \
+                                --update_major=${DOCKER_MAJOR_TAG}
+                        "
                     '''
                 }
             }
@@ -116,8 +122,10 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                    sudo bash -x docker_builder.sh --builddir=$(pwd)/tmp --cleanup=1
-                    sudo rm -rf ${WORKSPACE}/*
+                    sg docker -c "
+                        bash -x docker_builder.sh --builddir=$(pwd)/tmp --cleanup=1
+                    "
+                    rm -rf ${WORKSPACE}/*
                 '''
             }            
         }
