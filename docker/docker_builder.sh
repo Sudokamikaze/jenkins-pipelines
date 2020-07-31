@@ -11,7 +11,6 @@ Usage: $0 [OPTIONS]
         --builddir=DIR      Absolute path to the dir where all actions will be performed
         --get_sources       Source will be downloaded from github
         --product           Product to build
-        --productdir        Directory of product
         --build_container   Build container
         --export_container  Export built container
         --release_container Push built container to repository( default = 0)
@@ -48,7 +47,6 @@ append_arg_to_args () {
             --builddir=*) WORKDIR="$val" ;;
             --get_sources=*) SOURCE="$val" ;;
             --product=*) PRODUCT="$val" ;;
-            --productdir=*) PRODUCTDIR="$val" ;;
             --build_container=*) BUILD_CONTAINER="$val" ;;
             --export_container=*) EXPORT_CONTAINER="$val" ;;
             --release_container=*) RELEASE_CONTAINER="$val" ;;
@@ -169,10 +167,10 @@ build_container() {
     fi
 
     cd ${WORKDIR}/percona-docker
-    if [[ -d "${PRODUCTDIR}-$(echo ${VERSION} | awk -F"." 'BEGIN { OFS = "." }{ print $1, $2}')" ]]; then 
-        cd "${PRODUCTDIR}-$(echo ${VERSION} | awk -F"." 'BEGIN { OFS = "." }{ print $1, $2}')"
+    if [[ -d "${PRODUCT}-$(echo ${VERSION} | awk -F"." 'BEGIN { OFS = "." }{ print $1, $2}')" ]]; then 
+        cd "${PRODUCT}-$(echo ${VERSION} | awk -F"." 'BEGIN { OFS = "." }{ print $1, $2}')"
     else
-        if ! cd "${PRODUCTDIR}"; then
+        if ! cd "${PRODUCT}"; then
             exit 1
         fi
     fi
@@ -224,7 +222,6 @@ args=
 WORKDIR=
 SOURCE=0
 PRODUCT=
-PRODUCTDIR=
 BUILD_CONTAINER=0
 EXPORT_CONTAINER=0
 RELEASE_CONTAINER=0

@@ -58,7 +58,7 @@ pipeline {
                   rm -f docker_builder.sh
                   sudo rm -rf tmp
                   mkdir tmp
-                  wget https://raw.githubusercontent.com/Sudokamikaze/jenkins-pipelines/ENG-879/docker/docker_builder.sh
+                  wget https://raw.githubusercontent.com/Sudokamikaze/jenkins-pipelines/ENG-879-testingground/docker/docker_builder.sh
                   chmod +x docker_builder.sh
                   sudo bash -x docker_builder.sh --builddir=$(pwd)/tmp --install_deps=1
                   sudo gpasswd -a $(whoami) docker
@@ -69,22 +69,24 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh '''
+                sh """
                     sg docker -c "
-                        bash -x docker_builder.sh --builddir=$(pwd)/tmp --build_container=1 --product=${DOCKER_NAME} \
-                            --organization=${DOCKER_ORG} --version=${DOCKER_VERSION} --dockerfile=${DOCKER_FILE} \
-                            --update_major=${DOCKER_MAJOR_TAG}
+                        bash -x docker_builder.sh --builddir=\$(pwd)/tmp --build_container=1 --product=\${DOCKER_NAME} \
+                            --organization=\${DOCKER_ORG} --version=\${DOCKER_VERSION} --dockerfile=\${DOCKER_FILE} \
+                            --update_major=\${DOCKER_MAJOR_TAG}
                     "
-                '''
+                """
             }
         }
 
         stage('Test image') {
             steps {
-                sh '''
-                    cd ${WORKSPACE}/tmp/percona-docker/test
-                    bash -x run.sh ${DOCKER_ORG}/${DOCKER_NAME}:${DOCKER_VERSION}
-                '''
+                sh """
+                    sg docker -c "
+                        cd \${WORKSPACE}/tmp/percona-docker/test
+                        bash run.sh \${DOCKER_ORG}/\${DOCKER_NAME}:\${DOCKER_VERSION}
+                    "
+                """
             }
         }
 
@@ -93,11 +95,11 @@ pipeline {
                 expression { params.DOCKER_MODE == 'export' }
             }
             steps {
-                sh '''
+                sh """
                     sg docker -c "
-                        bash -x docker_builder.sh --builddir=$(pwd)/tmp --export_container=1 --product=${DOCKER_NAME} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION}
+                        bash -x docker_builder.sh --builddir=\$(pwd)/tmp --export_container=1 --product=\${DOCKER_NAME} --organization=\${DOCKER_ORG} --version=\${DOCKER_VERSION}
                     "
-                '''
+                """
                 archiveArtifacts artifacts: 'tarball/**', followSymlinks: false, onlyIfSuccessful: true
             }
         }
@@ -108,13 +110,13 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'hub.docker.com', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh '''
+                    sh """
                         sg docker -c "
-                            docker login -u ${USER} -p ${PASS}
-                            bash -x docker_builder.sh --builddir=$(pwd)/tmp --release_container=1 --product=${DOCKER_NAME} --organization=${DOCKER_ORG} --version=${DOCKER_VERSION} \
-                                --update_major=${DOCKER_MAJOR_TAG}
+                            docker login -u \${USER} -p \${PASS}
+                            bash -x docker_builder.sh --builddir=\$(pwd)/tmp --release_container=1 --product=\${DOCKER_NAME} --organization=\${DOCKER_ORG} --version=\${DOCKER_VERSION} \
+                                --update_major=\${DOCKER_MAJOR_TAG}
                         "
-                    '''
+                    """
                 }
             }
         }
