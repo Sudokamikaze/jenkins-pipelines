@@ -11,7 +11,7 @@ docker run --rm \
     --cap-add SYS_PTRACE \
     --mount type=bind,source=${ROOT_DIR},destination=/tmp/pxc \
     --mount type=bind,source=${SCRIPTS_DIR},destination=/tmp/scripts \
-    perconalab/pxc-build:${SOURCE_IMAGE//[:\/]/-} \
+    illiapshonkin/pxc-3490:${SOURCE_IMAGE//[:\/]/-} \
     sh -c "
     set -o errexit
     set -o xtrace
