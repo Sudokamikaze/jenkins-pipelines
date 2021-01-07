@@ -19,6 +19,10 @@ WORKSPACE=$(
 
 rm -fr ${WORKSPACE}/PXB
 mkdir -p ${WORKSPACE}/PXB
+
+echo "set args"
+echo $-
+
 tar -C ${WORKSPACE}/PXB --strip-components=1 -zxpf $(ls $WORKSPACE/*.tar.gz | head -1)
 
 # CentOS 6 & 7
