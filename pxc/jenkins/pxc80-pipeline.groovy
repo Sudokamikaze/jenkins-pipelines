@@ -136,7 +136,7 @@ pipeline {
                             ./pxc/local/checkout PXB24
                         '''
                         echo 'Build PXB24'
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'c42456e5-c28d-4962-b32c-b75d161bff27', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS_STASH', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                             sh '''
                                 sg docker -c "
                                     if [ \$(docker ps -q | wc -l) -ne 0 ]; then
@@ -158,7 +158,7 @@ pipeline {
                     }
                 }
                 stage('Build PXB80') {
-                    agent { label 'docker-32gb' }
+                    agent { label 'docker' }
                     steps {
                         git branch: 'master', url: 'https://github.com/Percona-Lab/jenkins-pipelines'
                         echo 'Checkout PXB80 sources'
@@ -171,7 +171,7 @@ pipeline {
                             ./pxc/local/checkout PXB80
                         '''
                         echo 'Build PXB80'
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'c42456e5-c28d-4962-b32c-b75d161bff27', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS_STASH', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                             sh '''
                                 sg docker -c "
                                     if [ \$(docker ps -q | wc -l) -ne 0 ]; then
@@ -195,7 +195,7 @@ pipeline {
             }
         }
         stage('Build PXC80') {
-                agent { label 'docker-32gb' }
+                agent { label 'docker' }
                 steps {
                     git branch: 'master', url: 'https://github.com/Percona-Lab/jenkins-pipelines'
                     echo 'Checkout PXC80 sources'
@@ -209,7 +209,7 @@ pipeline {
                     '''
 
                     echo 'Build PXC80'
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'c42456e5-c28d-4962-b32c-b75d161bff27', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS_STASH', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh '''
                             until aws s3 cp --no-progress s3://pxc-build-cache/${BUILD_TAG}/pxb24.tar.gz ./pxc/sources/pxc/pxb24.tar.gz; do
                                 sleep 5
@@ -239,11 +239,11 @@ pipeline {
                 }
         }
         stage('Test PXC80') {
-                agent { label 'docker-32gb' }
+                agent { label 'docker' }
                 steps {
                     git branch: 'master', url: 'https://github.com/Percona-Lab/jenkins-pipelines'
                     echo 'Test PXC80'
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'c42456e5-c28d-4962-b32c-b75d161bff27', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS_STASH', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh '''
                             until aws s3 cp --no-progress s3://pxc-build-cache/${BUILD_TAG}/pxc80.tar.gz ./pxc/sources/pxc/results/pxc80.tar.gz; do
                                 sleep 5
