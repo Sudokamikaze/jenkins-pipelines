@@ -58,7 +58,7 @@ pipeline {
                         error('IP is not valid')
                     }
                 }
-                copyArtifacts projectName: "${JOB_NAME}", optional: true, selector: lastSuccessful()
+                copyArtifacts projectName: 'manage-nginx-allow-list', optional: true, selector: lastSuccessful()
 
                 sh """
                     if [ -f 'nginx-white-list.conf' ]; then
