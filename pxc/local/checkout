@@ -115,6 +115,10 @@ if [ "$SOURCE_NAME" == 'PXB80' -o "$SOURCE_NAME" == 'ALL' ]; then
         git reset --hard
         git clean -xdf
 
+        if [[ ${PXB80_LATEST} == "true" ]]; then
+            git checkout 8.0
+            unset PXB80_BRANCH && PXB80_BRANCH="$(git describe --tags $(git rev-list --tags --max-count=1))"
+        fi
         if [ -n "${PXB80_BRANCH}" ]; then
             git checkout "${PXB80_BRANCH}" -b "tag-${PXB80_BRANCH}"
         fi
