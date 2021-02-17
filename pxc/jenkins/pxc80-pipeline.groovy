@@ -124,10 +124,10 @@ pipeline {
                     MY_BRANCH_BASE_MINOR=0
                     RAW_VERSION_LINK=$(echo ${PXB80_REPO%.git} | sed -e "s:github.com:raw.githubusercontent.com:g")
                     REPLY=$(curl -Is ${RAW_VERSION_LINK}/${PXB80_BRANCH}/XB_VERSION | head -n 1 | awk '{print $2}')
-                    if [[ ${REPLY} != 200 ]]; then
+                    if [[ ${REPLY} == 200 ]]; then
                         wget ${RAW_VERSION_LINK}/${PXB80_BRANCH}/XB_VERSION -O ${WORKSPACE}/VERSION-${BUILD_NUMBER}
                     else
-                        echo "Can't find XB_VERSION file in repository specified in ${PXB80_REPO}
+                        echo "Can not find XB_VERSION file in repository specified in ${PXB80_REPO}"
                         exit 1
                     fi
                     source ${WORKSPACE}/VERSION-${BUILD_NUMBER}
@@ -145,10 +145,10 @@ pipeline {
                     MY_BRANCH_BASE_MINOR=4
                     RAW_VERSION_LINK=$(echo ${PXB24_REPO%.git} | sed -e "s:github.com:raw.githubusercontent.com:g")
                     REPLY=$(curl -Is ${RAW_VERSION_LINK}/${PXB24_BRANCH}/XB_VERSION | head -n 1 | awk '{print $2}')
-                    if [[ ${REPLY} != 200 ]]; then
+                    if [[ ${REPLY} == 200 ]]; then
                         wget ${RAW_VERSION_LINK}/${PXB24_BRANCH}/XB_VERSION -O ${WORKSPACE}/VERSION-${BUILD_NUMBER}
                     else
-                        echo "Can't find XB_VERSION file in repository specified in ${PXB24_REPO}
+                        echo "Can not find XB_VERSION file in repository specified in ${PXB24_REPO}"
                         exit 1
                     fi
                     source ${WORKSPACE}/VERSION-${BUILD_NUMBER}
