@@ -1,5 +1,5 @@
 - job:
-    name: percona-xtrabackup-2.4-test-param
+    name: percona-xtrabackup-2.4-test-param-pxb-2329
     project-type: matrix
     defaults: global
     description: |
@@ -75,7 +75,7 @@
         - galera57
     builders:
     - trigger-builds:
-      - project: percona-xtrabackup-2.4-test-pipeline
+      - project: percona-xtrabackup-2.4-test-pipeline-pxb-2329
         current-parameters: true
         predefined-parameters: |
           DOCKER_OS=${DOCKER_OS}
@@ -89,12 +89,12 @@
     - shell: |
         sudo find . -name "*.xml" -o -name "*.log" -delete
     - copyartifact:
-        project: percona-xtrabackup-2.4-test-pipeline
+        project: percona-xtrabackup-2.4-test-pipeline-pxb-2329
         which-build: specific-build
-        build-number: "${TRIGGERED_BUILD_NUMBERS_percona_xtrabackup_2_4_test_pipeline}"
+        build-number: "${TRIGGERED_BUILD_NUMBERS_percona_xtrabackup_2_4_test_pipeline_pxb_2329}"
         do-not-fingerprint: true
     - shell: |
-        echo "${TRIGGERED_BUILD_NUMBERS_percona_xtrabackup_2_4_test_pipeline}" > PIPELINE_BUILD_NUMBER
+        echo "${TRIGGERED_BUILD_NUMBERS_percona_xtrabackup_2_4_test_pipeline_pxb_2329}" > PIPELINE_BUILD_NUMBER
     publishers:
     - junit:
         results: "**/junit.xml"

@@ -1,5 +1,5 @@
 - job:
-    name: percona-xtrabackup-2.4-test-pipeline
+    name: percona-xtrabackup-2.4-test-pipeline-pxb-2329
     project-type: pipeline
     description: |
         Do not edit this job through the web!
@@ -7,9 +7,9 @@
     pipeline-scm:
       scm:
         - git:
-            url: https://github.com/Percona-Lab/jenkins-pipelines
+            url: https://github.com/Sudokamikaze/jenkins-pipelines
             branches:
-            - "master"
+            - "PXB-2329-testingground"
             wipe-workspace: false
       lightweight-checkout: true
       script-path: pxb/v2/jenkins/percona-xtrabackup-2.4-test-pipeline.groovy

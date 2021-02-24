@@ -1,5 +1,5 @@
 - job:
-    name: percona-xtrabackup-8.0-compile-param
+    name: percona-xtrabackup-8.0-compile-param-pxb-2329
     project-type: matrix
     defaults: global
     description: |
