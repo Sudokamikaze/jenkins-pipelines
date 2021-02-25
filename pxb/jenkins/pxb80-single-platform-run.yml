@@ -205,6 +205,7 @@
           ./pxb/jenkins/checkout PXB80
           mkdir $PWD/pxb/sources/pxb80/results
           bash -x ./pxb/jenkins/build-binary-pxb80 $PWD/pxb/sources/pxb80/results $PWD/pxb/sources/pxb80
+
           bash -x ./pxb/jenkins/test-binary-pxb80  $PWD/pxb/sources/pxb80/results
           cp $PWD/pxb/sources/pxb80/results/junit.xml ${WORKSPACE}
 
