@@ -226,7 +226,7 @@ pipeline {
         stage('Test PXC56') {
                 agent { label 'docker-32gb' }
                 steps {
-                    git branch: 'master', url: 'https://github.com/Percona-Lab/jenkins-pipelines'
+                    git branch: '5.6-PXC-3622-testingground', url: 'https://github.com/Sudokamikaze/jenkins-pipelines'
                     echo 'Test PXC56'
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'c42456e5-c28d-4962-b32c-b75d161bff27', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh '''

@@ -27,6 +27,12 @@ docker run --rm \
     mkdir /tmp/results
     cp /tmp/pxc/results/*.tar.gz /tmp/results
 
+    if [ -f /usr/bin/yum ]; then
+         sudo yum -y install perl-XML-Simple
+    else
+         sudo apt-get install -y libxml-simple-perl 
+    fi
+
     bash -x /tmp/scripts/test-binary-pxc56 /tmp/results
 
     mkdir /tmp/results/log
