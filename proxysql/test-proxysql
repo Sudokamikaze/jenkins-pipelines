@@ -89,11 +89,10 @@ sudo ln -s $WORKDIR_ABS/PROXY_ADMIN/proxysql*/etc/proxysql-admin.cnf ${WORKDIR_A
 sudo ln -s /usr/bin/proxysql $WORKDIR_ABS/WORKDIR/proxysql-2.0/usr/bin/proxysql
 status=0
 # Running ProxySQL QA script
-if [ -f /usr/bin/yum ]; then
-    sudo cp /etc/hosts ${WORKDIR_ABS}/hosts.new
-    sudo sed -i 's/::1*.*localhost /::1 /' ${WORKDIR_ABS}/hosts.new
-    sudo cp -f ${WORKDIR_ABS}/hosts.new /etc/hosts
-fi
+sudo cp /etc/hosts ${WORKDIR_ABS}/hosts.new
+sudo sed -i 's/::1*.*localhost /::1 /' ${WORKDIR_ABS}/hosts.new
+sudo cp -f ${WORKDIR_ABS}/hosts.new /etc/hosts
+
 sudo sed -i 's/wsrep_sst_method=rsync/wsrep_sst_method=xtrabackup-v2/g' $WORKDIR_ABS/PROXY_ADMIN/proxysql*/tests/proxysql-admin-testsuite.sh
 sudo sed -i 's/localhost/127.0.0.1/g' $WORKDIR_ABS/PROXY_ADMIN/proxysql*/etc/proxysql-admin.cnf
 sudo bash -x $WORKDIR_ABS/PROXY_ADMIN/proxysql*/tests/proxysql-admin-testsuite.sh \
