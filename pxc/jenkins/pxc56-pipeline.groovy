@@ -9,9 +9,13 @@ pipeline {
             trim: true)
         string(
             defaultValue: '5.6',
-            description: 'Tag/Branch for PXC repository',
+            description: 'Tag/PR/Branch for PXC repository',
             name: 'PXC56_BRANCH',
             trim: true)
+        booleanParam(
+            defaultValue: false, 
+            description: 'Check only if you pass PR number to PXC56_BRANCH field',
+            name: 'USE_PR') 
         string(
             defaultValue: 'https://github.com/percona/percona-xtrabackup',
             description: 'URL to PXB23 repository',

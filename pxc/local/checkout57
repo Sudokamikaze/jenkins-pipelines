@@ -37,6 +37,10 @@ if [ "$SOURCE_NAME" == 'PXC57' -o "$SOURCE_NAME" == 'ALL' ]; then
 
         mkdir ./target
 
+        if [[ ${USE_PR} == "true" ]]; then
+            git fetch origin pull/${PXC57_BRANCH}/head:pr-${PXC57_BRANCH}
+            PXC57_BRANCH="pr-${PXC57_BRANCH}"
+        fi
         if [ -n "${PXC57_BRANCH}" ]; then
             git checkout "${PXC57_BRANCH}"
         fi
