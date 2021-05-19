@@ -115,7 +115,7 @@ if [[ "${DEFAULT_TESTING}" != "no" ]]; then
 fi
 
 for file in $(find ${WORKDIR_ABS}/ -maxdepth 1 -name "*.xml"); do
-    iconv -c -f UTF-8 -t ASCII ${file} | tr -cd '[:print:]\n\r' > ${file}-converted
+    iconv -c -t UTF-8 ${file} | tr -cd '[:print:]\n\r' > ${file}-converted
     mv ${file}-converted ${file}
 done
 
