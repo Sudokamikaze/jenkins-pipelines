@@ -242,6 +242,10 @@ if [ -f /usr/bin/apt-get ]; then
         sleep 1
     done
 
+    if [[ ${DIST} == 'focal' ]]; then
+        update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    fi
+
 	#   Install mysql-connector for QA framework run
 	pip3 install mysql-connector
     apt-get -y install build-essential devscripts
