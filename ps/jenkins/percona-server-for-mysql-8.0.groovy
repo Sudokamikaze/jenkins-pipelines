@@ -26,7 +26,11 @@ void buildStage(String DOCKER_OS, String STAGE_PARAM) {
     sh """
         set -o xtrace
         mkdir -p test
-        wget https://raw.githubusercontent.com/percona/percona-server/${BRANCH}/build-ps/percona-server-8.0_builder.sh -O ps_builder.sh || curl https://raw.githubusercontent.com/percona/percona-server/${BRANCH}/build-ps/percona-server-8.0_builder.sh -o ps_builder.sh
+        if [ ${ENABLE_ZENFS} = "ON" ]; then
+            wget https://raw.githubusercontent.com/percona/percona-server/8.0/build-ps/percona-server-8.0_builder.sh -O ps_builder.sh || curl https://raw.githubusercontent.com/percona/percona-server/8.0/build-ps/percona-server-8.0_builder.sh -o ps_builder.sh
+        else
+            wget https://raw.githubusercontent.com/percona/percona-server/${BRANCH}/build-ps/percona-server-8.0_builder.sh -O ps_builder.sh || curl https://raw.githubusercontent.com/percona/percona-server/${BRANCH}/build-ps/percona-server-8.0_builder.sh -o ps_builder.sh
+        fi
         pwd -P
         ls -laR
         export build_dir=\$(pwd -P)
