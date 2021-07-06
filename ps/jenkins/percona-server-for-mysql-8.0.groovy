@@ -86,7 +86,6 @@ parameters {
                label 'min-xenial-x64'
             }
             steps {
-                slackNotify("#releases", "#00FF00", "[${JOB_NAME}]: starting build for ${BRANCH}")
                 cleanUpWS()
                 installCli("deb")
                 buildStage("ubuntu:xenial", "--get_sources=1")
@@ -349,11 +348,9 @@ parameters {
     }
     post {
         success {
-            slackNotify("#releases", "#00FF00", "[${JOB_NAME}]: build has been finished successfully for ${BRANCH}")
             deleteDir()
         }
         failure {
-            slackNotify("#releases", "#FF0000", "[${JOB_NAME}]: build failed for ${BRANCH}")
             deleteDir()
         }
         always {
